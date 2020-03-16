@@ -1,0 +1,8 @@
+{
+  "files.exclude": {
+    "**/.deps/": true,
+    "**/.dirstamp": true,
+    "**/*.o": true,
+    "autom4te.cache/": true
+  }
+}
