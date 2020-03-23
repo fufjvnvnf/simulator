@@ -31,42 +31,20 @@
 #define IDEAL_HOST 20
 
 class Factory {
-    public:
-        static int flow_counter;
-        static Flow *get_flow(
-                uint32_t id, 
-                double start_time, 
-                uint32_t size,
-                Host *src, 
-                Host *dst, 
-                uint32_t flow_type,
-                double paced_rate = 0.0
-                );
+ public:
+  static int flow_counter;
+  static Flow *get_flow(uint32_t id, double start_time, uint32_t size,
+                        Host *src, Host *dst, uint32_t flow_type,
+                        double paced_rate = 0.0);
 
-        static Flow *get_flow(
-                double start_time, 
-                uint32_t size,
-                Host *src, 
-                Host *dst, 
-                uint32_t flow_type,
-                double paced_rate = 0.0
-                );
+  static Flow *get_flow(double start_time, uint32_t size, Host *src, Host *dst,
+                        uint32_t flow_type, double paced_rate = 0.0);
 
-        static Queue *get_queue(
-                uint32_t id, 
-                double rate,
-                uint32_t queue_size, 
-                uint32_t type,
-                double drop_prob, 
-                int location
-                );
+  static Queue *get_queue(uint32_t id, double rate, uint32_t queue_size,
+                          uint32_t type, double drop_prob, int location);
 
-        static Host* get_host(
-                uint32_t id, 
-                double rate, 
-                uint32_t queue_type, 
-                uint32_t host_type
-                );
+  static Host *get_host(uint32_t id, double rate, uint32_t queue_type,
+                        uint32_t host_type);
 };
 
 #endif

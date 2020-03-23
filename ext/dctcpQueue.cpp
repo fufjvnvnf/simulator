@@ -2,15 +2,17 @@
 // 11 January 2016
 
 #include "dctcpQueue.h"
-#include "dctcpPacket.h"
 
 #include "../run/params.h"
+#include "dctcpPacket.h"
 
 extern double get_current_time();
 extern void add_to_event_queue(Event *ev);
 extern DCExpParams params;
 
-DctcpQueue::DctcpQueue(uint32_t id, double rate, uint32_t limit_bytes, int location) : Queue(id, rate, limit_bytes, location) {}
+DctcpQueue::DctcpQueue(uint32_t id, double rate, uint32_t limit_bytes,
+                       int location)
+    : Queue(id, rate, limit_bytes, location) {}
 
 /**
  * ECN marking. Otherwise just a droptail queue.
@@ -20,19 +22,17 @@ DctcpQueue::DctcpQueue(uint32_t id, double rate, uint32_t limit_bytes, int locat
  * if queue length > params.dctcp_mark_thresh, mark (ECN = 1).
  */
 void DctcpQueue::enque(Packet *packet) {
-    p_arrivals += 1;
-    b_arrivals += packet->size;
-    if (bytes_in_queue + packet->size <= limit_bytes) {
-        packets.push_back(packet);
-        bytes_in_queue += packet->size;
+  p_arrivals += 1;
+  b_arrivals += packet->size;
+  if (bytes_in_queue + packet->size <= limit_bytes) {
+    packets.push_back(packet);
+    bytes_in_queue += packet->size;
 
-        if (packets.size() >= params.dctcp_mark_thresh) {
-            ((DctcpPacket*) packet)->ecn = true;
-        }
-    } 
-    else {
-        pkt_drop++;
-        drop(packet);
+    if (packets.size() >= params.dctcp_mark_thresh) {
+      ((DctcpPacket *)packet)->ecn = true;
     }
+  } else {
+    pkt_drop++;
+    drop(packet);
+  }
 }
-
