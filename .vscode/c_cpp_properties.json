@@ -3,12 +3,15 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/inc",
                 "${workspaceFolder}/coresim/",
                 "${workspaceFolder}/ext/"
             ],
             "defines": [],
-            "macFrameworkPath": [],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
             "cppStandard": "c++11",
