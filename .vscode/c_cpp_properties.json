@@ -3,19 +3,21 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/inc",
                 "${workspaceFolder}/coresim/",
-                "${workspaceFolder}/ext/"
+                "${workspaceFolder}/ext/",
+                "/usr/local/include/"
             ],
             "defines": [],
             "macFrameworkPath": [
-                "/System/Library/Frameworks",
-                "/Library/Frameworks"
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/clang++",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "intelliSenseMode": "${default}"
+            "intelliSenseMode": "${default}",
+            "compilerArgs": [
+                "-g -O3 -gdwarf-2 -Wall -std=c++0x"
+            ]
         }
     ],
     "version": 4
