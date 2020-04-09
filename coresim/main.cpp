@@ -18,6 +18,7 @@
 #include "topology.h"
 //#include "../ext/fastpasshost.h"
 
+#include "../log/log.h"
 #include "../run/params.h"
 
 using namespace std;
@@ -49,6 +50,8 @@ uint32_t sent_packets = 0;
 
 extern DCExpParams params;
 double start_time = -1;
+
+extern log::Log log("../test");
 
 const std::string currentDateTime() {
   time_t now = time(0);

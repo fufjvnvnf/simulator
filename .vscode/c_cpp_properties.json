@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/coresim/",
                 "${workspaceFolder}/ext/",
+                "${workspaceFolder}/stats/",
                 "/usr/local/include/"
             ],
             "defines": [],
