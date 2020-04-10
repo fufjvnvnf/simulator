@@ -134,6 +134,8 @@ void CapabilityFlow::receive(Packet* p) {
       }
     }
 
+    log->recv_pkt(p->size - hdr_size, p->seq_no);
+
     received_bytes += (p->size - hdr_size);
     if (num_outstanding_packets >= ((p->size - hdr_size) / (mss)))
       num_outstanding_packets -= ((p->size - hdr_size) / (mss));
@@ -227,6 +229,7 @@ Packet* CapabilityFlow::send(uint32_t seq, int capa_seq, int data_seq,
   p->capa_data_seq = data_seq;
   total_pkt_sent++;
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
+  log->send_pkt(pkt_size - hdr_size, seq);
   return p;
 }
 

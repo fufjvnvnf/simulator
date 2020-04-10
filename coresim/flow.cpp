@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "../log/flowlog.h"
 #include "../run/params.h"
 #include "event.h"
 #include "packet.h"
@@ -54,6 +55,10 @@ Flow::Flow(uint32_t id, double start_time, uint32_t size, Host *s, Host *d) {
   this->first_byte_receive_time = -1;
   this->first_hop_departure = 0;
   this->last_hop_departure = 0;
+
+  this->log =
+      new log::flow::FlowLog(id, size, params.mss, s->id, -1, d->id, -1);
+  this->log->start(start_time, 0);
 }
 
 Flow::~Flow() {
@@ -103,6 +108,9 @@ Packet *Flow::send(uint32_t seq) {
   this->total_pkt_sent++;
 
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
+
+  log->send_pkt(pkt_size, seq);
+
   return p;
 }
 
@@ -177,6 +185,8 @@ void Flow::receive(Packet *p) {
 void Flow::receive_data_pkt(Packet *p) {
   received_count++;
   total_queuing_time += p->total_queuing_delay;
+
+  log->recv_pkt(p->size, p->seq_no);
 
   if (received.count(p->seq_no) == 0) {
     received[p->seq_no] = true;

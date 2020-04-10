@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 
+#include "../log/flowlog.h"
 #include "node.h"
 
 class Packet;
@@ -79,6 +80,8 @@ class Flow {
 
   uint32_t flow_priority;
   double deadline;
+
+  log::flow::FlowLog *log;
 };
 
 #endif

@@ -15,8 +15,9 @@ class FlowLog {
 
   void start(double start_time, uint32_t init_seq_no);
   void finish(double end_time);  // will write to file
-  void send_pkt(uint32_t pkt_size);
-  void recv_pkt(uint32_t pkt_size);
+  void send_pkt(uint32_t pkt_size, uint32_t seq_no);
+  void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
+  void ack(uint32_t pkt_size);
 
   void write_to_file();
 
@@ -37,7 +38,8 @@ class FlowLog {
 
   /* transport layer */
   uint32_t init_seq_no;
-  uint32_t seq_no;  // current seq no
+  uint32_t last_seq_sent;
+  uint32_t last_seq_recv;
 
   uint32_t bytes_sent;
   uint32_t bytes_recv;

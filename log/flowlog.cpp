@@ -24,6 +24,9 @@ FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
   this->pkts_sent = 0;
   this->pkts_recv = 0;
 
+  this->last_seq_sent = 0;
+  this->last_seq_recv = 0;
+
   this->acked_bytes = 0;
   this->acked_pkts = 0;
 }
@@ -31,7 +34,6 @@ FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
 void FlowLog::start(double start_time, uint32_t init_seq_no) {
   this->start_time = start_time;
   this->init_seq_no = init_seq_no;
-  this->seq_no = init_seq_no;
 }
 
 void FlowLog::finish(double end_time) {
@@ -39,14 +41,21 @@ void FlowLog::finish(double end_time) {
   write_to_file();
 }
 
-void FlowLog::send_pkt(uint32_t pkt_size) {
+void FlowLog::send_pkt(uint32_t pkt_size, uint32_t seq_no) {
   pkts_sent++;
   bytes_sent += pkt_size;
+  this->last_seq_sent = std::max(this->last_seq_sent, seq_no);
 }
 
-void FlowLog::recv_pkt(uint32_t pkt_size) {
+void FlowLog::recv_pkt(uint32_t pkt_size, uint32_t seq_no) {
   pkts_recv++;
   bytes_recv += pkt_size;
+  this->last_seq_recv = std::max(this->last_seq_recv, seq_no);
+}
+
+void FlowLog::ack(uint32_t pkt_size) {
+  this->acked_bytes += pkt_size;
+  this->acked_pkts++;
 }
 
 void FlowLog::write_to_file() {
