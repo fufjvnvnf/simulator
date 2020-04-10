@@ -46,6 +46,7 @@ Packet *MagicFlow::send(uint32_t seq) {
                          mss + hdr_size, src, dst);
   total_pkt_sent++;
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
+  log->send_pkt(mss, seq);
   return p;
 }
 
@@ -74,6 +75,7 @@ void MagicFlow::receive(Packet *p) {
   if (p->type == NORMAL_PACKET) {
     received_count++;
     received_bytes += (p->size - hdr_size);
+    log->recv_pkt(p->size - hdr_size, p->seq_no);
     // only send one ack per bdp
     //        if (received_count == size_in_pkt){
     //            assert( this ==

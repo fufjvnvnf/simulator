@@ -75,6 +75,7 @@ void FastpassFlow::send_data_pkt() {
   if (this->sender_remaining_num_pkts == 0)
     add_to_event_queue(new FastpassTimeoutEvent(
         get_current_time() + params.fastpass_epoch_time, this));
+  log->send_pkt(mss, p->seq_no);
 }
 
 void FastpassFlow::fastpass_timeout() {
@@ -103,6 +104,7 @@ void FastpassFlow::receive(Packet* p) {
                 << " received data seq" << p->seq_no << "\n";
     this->send_ack_pkt(p->seq_no);
     this->received_bytes += mss;
+    log->recv_pkt(mss, p->seq_no);
     if (receiver_received.count(p->seq_no) == 0) {
       receiver_received.insert(p->seq_no);
       if (num_outstanding_packets >= ((p->size - hdr_size) / (mss)))

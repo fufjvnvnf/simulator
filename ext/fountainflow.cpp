@@ -34,6 +34,7 @@ Packet *FountainFlow::send(uint32_t seq) {
                          mss + hdr_size, src, dst);
   total_pkt_sent++;
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
+  log->send_pkt(mss, seq);
   return p;
 }
 
@@ -53,6 +54,7 @@ void FountainFlow::receive(Packet *p) {
     if (received_count >= goal && (received_count - goal) % 7 == 0) {
       send_ack();
     }
+    log->recv_pkt(p->size - hdr_size, p->seq_no);
   } else if (p->type == ACK_PACKET) {
     if (flow_proc_event != NULL) {
       flow_proc_event->cancelled = true;
