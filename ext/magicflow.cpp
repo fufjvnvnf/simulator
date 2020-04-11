@@ -92,6 +92,7 @@ void MagicFlow::receive(Packet *p) {
     //((QuickSchedulingHost*)(this->src))->flow_sending = NULL;
     //((QuickSchedulingHost*)(this->src))->schedule();
     add_to_event_queue(new FlowFinishedEvent(get_current_time(), this));
+    log->recv_ack(p->size);
   }
   delete p;
 }

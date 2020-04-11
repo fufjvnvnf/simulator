@@ -40,6 +40,7 @@ void FastpassFlow::send_ack_pkt(uint32_t seq) {
       new PlainAck(this, seq, params.hdr_size, this->dst, this->src);
   add_to_event_queue(
       new PacketQueuingEvent(get_current_time(), ack, this->dst->queue));
+  log->send_ack(ack->size);
 }
 
 void FastpassFlow::send_schedule_pkt(FastpassEpochSchedule* schd) {
@@ -114,6 +115,7 @@ void FastpassFlow::receive(Packet* p) {
     }
 
   } else if (p->type == ACK_PACKET) {
+    log->recv_ack(p->size);
     if (debug_flow(this->id))
       std::cout << get_current_time() << " flow " << this->id
                 << " received ack seq" << p->seq_no << "\n";

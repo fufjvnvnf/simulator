@@ -2,12 +2,7 @@
     "configurations": [
         {
             "name": "Mac",
-            "includePath": [
-                "${workspaceFolder}/coresim/",
-                "${workspaceFolder}/ext/",
-                "${workspaceFolder}/stats/",
-                "/usr/local/include/"
-            ],
+            "includePath": [],
             "defines": [],
             "macFrameworkPath": [
                 "/System/Library/Frameworks"

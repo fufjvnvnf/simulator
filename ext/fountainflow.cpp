@@ -42,6 +42,7 @@ void FountainFlow::send_ack() {
   Packet *ack = new PlainAck(this, 0, hdr_size, dst, src);
   add_to_event_queue(
       new PacketQueuingEvent(get_current_time(), ack, dst->queue));
+  log->send_ack(ack->size);
 }
 
 void FountainFlow::receive(Packet *p) {
@@ -60,6 +61,7 @@ void FountainFlow::receive(Packet *p) {
       flow_proc_event->cancelled = true;
     }
     add_to_event_queue(new FlowFinishedEvent(get_current_time(), this));
+    log->recv_ack(p->size);
   } else if (p->type == RTS_PACKET) {
   }
 }

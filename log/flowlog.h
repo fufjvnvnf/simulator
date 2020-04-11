@@ -17,7 +17,8 @@ class FlowLog {
   void finish(double end_time);  // will write to file
   void send_pkt(uint32_t pkt_size, uint32_t seq_no);
   void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
-  void ack(uint32_t pkt_size);
+  void send_ack(uint32_t pkt_size);
+  void recv_ack(uint32_t pkt_size);
 
   void write_to_file();
 
@@ -41,13 +42,17 @@ class FlowLog {
   uint32_t last_seq_sent;
   uint32_t last_seq_recv;
 
+  // data packets & bytes
   uint32_t bytes_sent;
   uint32_t bytes_recv;
   uint32_t pkts_sent;
   uint32_t pkts_recv;
 
-  uint32_t acked_bytes;
-  uint32_t acked_pkts;
+  // ack packets & bytes
+  uint32_t ack_bytes_sent;
+  uint32_t ack_pkts_sent;
+  uint32_t ack_bytes_recv;
+  uint32_t ack_pkts_recv;
 };
 
 }  // namespace flow

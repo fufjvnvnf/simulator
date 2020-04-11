@@ -118,6 +118,7 @@ void Flow::send_ack(uint32_t seq, std::vector<uint32_t> sack_list) {
   Packet *p =
       new Ack(this, seq, sack_list, hdr_size, dst, src);  // Acks are dst->src
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, dst->queue));
+  log->send_ack(p->size);
 }
 
 void Flow::receive_ack(uint32_t ack, std::vector<uint32_t> sack_list) {
@@ -170,6 +171,7 @@ void Flow::receive(Packet *p) {
   if (p->type == ACK_PACKET) {
     Ack *a = (Ack *)p;
     receive_ack(a->seq_no, a->sack_list);
+    log->recv_ack(p->size);
   } else if (p->type == NORMAL_PACKET) {
     if (this->first_byte_receive_time == -1) {
       this->first_byte_receive_time = get_current_time();

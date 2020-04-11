@@ -159,6 +159,7 @@ void CapabilityFlow::receive(Packet* p) {
       std::cout << get_current_time() << " flow " << this->id
                 << " received ack\n";
     add_to_event_queue(new FlowFinishedEvent(get_current_time(), this));
+    log->recv_ack(p->size);
   } else if (p->type == CAPABILITY_PACKET) {
     Capability* c = new Capability();
     if (CAPABILITY_MEASURE_WASTE) {
