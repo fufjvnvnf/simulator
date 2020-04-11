@@ -173,7 +173,12 @@ void DctcpFlow::receive_data_pkt(Packet *p) {
 void DctcpFlow::increase_cwnd() {
   // cwnd <- cwnd * (1 - a/2)
   // floor(x + 0.5) same as round to nearest integer
-  cwnd_mss = (uint32_t)floor(cwnd_mss * (1 - dctcp_alpha / 2) + 0.5);
+  uint32_t new_cwnd_mss =
+      (uint32_t)floor(cwnd_mss * (1 - dctcp_alpha / 2) + 0.5);
+  if (new_cwnd_mss < cwnd_mss) {
+    log->cwnd_cut(false);
+  }
+  cwnd_mss = new_cwnd_mss;
 }
 
 void DctcpFlow::receive_ack(Ack *a) {

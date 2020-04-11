@@ -65,6 +65,13 @@ void FlowLog::recv_ack(uint32_t pkt_size) {
   this->ack_pkts_recv++;
 }
 
+void FlowLog::cwnd_cut(bool is_timeout) {
+  total_cwnd_cuts++;
+  if (!is_timeout) {
+    cgstn_cwnd_cuts++;
+  }
+}
+
 void FlowLog::write_to_file() {
   // TODO
   flow_log_file << "test\n";

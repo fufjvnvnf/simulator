@@ -239,6 +239,7 @@ void Flow::handle_timeout() {
   next_seq_no = last_unacked_seq;
   // Reset congestion window to 1
   cwnd_mss = 1;
+  log->cwnd_cut(true);
   send_pending_data();                             // TODO Send again
   set_timeout(get_current_time() + retx_timeout);  // TODO
 }

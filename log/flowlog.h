@@ -19,6 +19,7 @@ class FlowLog {
   void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
   void send_ack(uint32_t pkt_size);
   void recv_ack(uint32_t pkt_size);
+  void cwnd_cut(bool is_timeout);
 
   void write_to_file();
 
@@ -53,6 +54,9 @@ class FlowLog {
   uint32_t ack_pkts_sent;
   uint32_t ack_bytes_recv;
   uint32_t ack_pkts_recv;
+
+  uint32_t cgstn_cwnd_cuts;
+  uint32_t total_cwnd_cuts;
 };
 
 }  // namespace flow
