@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <unordered_map>
+#include <unordered_set>
 
 namespace log {
 namespace flow {
@@ -20,6 +20,8 @@ class FlowLog {
   void send_ack(uint32_t pkt_size);
   void recv_ack(uint32_t pkt_size);
   void cwnd_cut(bool is_timeout);
+  void timeout();
+  void ecn();
 
   void write_to_file();
 
@@ -48,6 +50,7 @@ class FlowLog {
   uint32_t bytes_recv;
   uint32_t pkts_sent;
   uint32_t pkts_recv;
+  std::unordered_set<uint32_t> sent_pkts;
 
   // ack packets & bytes
   uint32_t ack_bytes_sent;
@@ -57,6 +60,13 @@ class FlowLog {
 
   uint32_t cgstn_cwnd_cuts;
   uint32_t total_cwnd_cuts;
+
+  uint32_t timeouts;
+  uint32_t pkts_rexmit;
+  uint32_t bytes_rexmit;
+
+  uint32_t ecn_pkts;
+  uint32_t dup_acks;
 };
 
 }  // namespace flow

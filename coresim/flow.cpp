@@ -236,6 +236,7 @@ void Flow::set_timeout(double time) {
 }
 
 void Flow::handle_timeout() {
+  log->timeout();
   next_seq_no = last_unacked_seq;
   // Reset congestion window to 1
   cwnd_mss = 1;

@@ -51,8 +51,6 @@ uint32_t sent_packets = 0;
 extern DCExpParams params;
 double start_time = -1;
 
-extern log::Log log("../test");
-
 const std::string currentDateTime() {
   time_t now = time(0);
   struct tm tstruct;
@@ -115,6 +113,7 @@ void run_scenario() {
 extern void run_experiment(int argc, char** argv, uint32_t exp_type);
 
 int main(int argc, char** argv) {
+  log::init("../test");
   time_t start_time;
   time(&start_time);
 

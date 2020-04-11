@@ -205,6 +205,9 @@ void DctcpFlow::receive_ack(Ack *a) {
     // delayed ack
     assert(dca->ecn == 1 || dca->ecn == 0);
     ecn_history->push_front(dca->ecn);
+    if (dca->ecn) {
+      log->ecn();
+    }
     while (ecn_history->size() > max_cwnd) ecn_history->pop_back();
 
     // Update alpha
