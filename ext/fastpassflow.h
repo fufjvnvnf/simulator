@@ -3,7 +3,7 @@
 
 #include <set>
 #include <unordered_map>
-
+#include "../coresim/event.h"
 #include "../coresim/flow.h"
 
 class FastpassEpochSchedule;

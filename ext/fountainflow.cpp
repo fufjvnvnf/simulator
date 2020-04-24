@@ -34,7 +34,7 @@ Packet *FountainFlow::send(uint32_t seq) {
                          mss + hdr_size, src, dst);
   total_pkt_sent++;
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
-  log->send_pkt(mss, seq);
+  log->send_pkt(mss, seq, cwnd_mss);
   return p;
 }
 
@@ -61,7 +61,8 @@ void FountainFlow::receive(Packet *p) {
       flow_proc_event->cancelled = true;
     }
     add_to_event_queue(new FlowFinishedEvent(get_current_time(), this));
-    log->recv_ack(p->size);
+    rtt = p->sending_time - ((Ack *)p)->pkt_sent_time;
+    log->recv_ack(p->size, rtt);
   } else if (p->type == RTS_PACKET) {
   }
 }

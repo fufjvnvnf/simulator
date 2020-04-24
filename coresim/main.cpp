@@ -18,7 +18,6 @@
 #include "topology.h"
 //#include "../ext/fastpasshost.h"
 
-#include "../log/log.h"
 #include "../run/params.h"
 
 using namespace std;
@@ -37,6 +36,7 @@ uint32_t arrival_packets_at_50 = 0;
 uint32_t arrival_packets_at_100 = 0;
 uint32_t arrival_packets_count = 0;
 uint32_t total_finished_flows = 0;
+uint32_t active_flows = 0;
 uint32_t duplicated_packets_received = 0;
 
 uint32_t injected_packets = 0;
@@ -49,6 +49,8 @@ uint32_t total_completed_packets = 0;
 uint32_t sent_packets = 0;
 
 extern DCExpParams params;
+extern std::ofstream flow_log_file;
+std::ofstream flow_log_file;
 double start_time = -1;
 
 const std::string currentDateTime() {
@@ -113,7 +115,7 @@ void run_scenario() {
 extern void run_experiment(int argc, char** argv, uint32_t exp_type);
 
 int main(int argc, char** argv) {
-  log::init("../test");
+  flow_log_file.open("../experiments/test/flowlog.txt");
   time_t start_time;
   time(&start_time);
 

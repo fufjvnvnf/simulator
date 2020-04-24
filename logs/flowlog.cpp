@@ -1,10 +1,10 @@
-#include "flowlog.h";
+#include "flowlog.h"
 
 #include <fstream>
 
 extern std::ofstream flow_log_file;
 
-namespace log {
+namespace logs {
 namespace flow {
 
 FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
@@ -38,15 +38,22 @@ void FlowLog::start(double start_time, uint32_t init_seq_no) {
   this->init_seq_no = init_seq_no;
 }
 
-void FlowLog::finish(double end_time) {
+void FlowLog::end(bool finished, uint32_t active_flows, double end_time,
+                  uint32_t cwnd, double rtt) {
+  this->finished = finished;
   this->end_time = end_time;
+  this->end_cwnd = cwnd;
+  this->end_rtt = rtt;
+  this->active_flows = active_flows;
   write_to_file();
 }
 
-void FlowLog::send_pkt(uint32_t pkt_size, uint32_t seq_no) {
+void FlowLog::send_pkt(uint32_t pkt_size, uint32_t seq_no, uint32_t cwnd) {
   pkts_sent++;
   bytes_sent += pkt_size;
-  last_seq_sent = std::max(this->last_seq_sent, seq_no);
+  last_seq_sent = std::max(last_seq_sent, seq_no);
+  total_cwnd += cwnd;
+  max_cwnd = std::max(max_cwnd, cwnd);
   if (sent_pkts.count(seq_no)) {
     pkts_rexmit++;
     bytes_rexmit += pkt_size;
@@ -66,9 +73,11 @@ void FlowLog::send_ack(uint32_t pkt_size) {
   this->ack_pkts_sent++;
 }
 
-void FlowLog::recv_ack(uint32_t pkt_size) {
+void FlowLog::recv_ack(uint32_t pkt_size, double rtt) {
   this->ack_bytes_recv += pkt_size;
   this->ack_pkts_recv++;
+  this->total_rtt += rtt;
+  this->max_rtt = std::max(this->max_rtt, rtt);
 }
 
 void FlowLog::cwnd_cut(bool is_timeout) {
@@ -82,10 +91,12 @@ void FlowLog::timeout() { this->timeouts++; }
 
 void FlowLog::ecn() { this->ecn_pkts++; }
 
+void FlowLog::dup_ack() { this->dup_acks++; }
+
 void FlowLog::write_to_file() {
   // TODO
   flow_log_file << "test\n";
 }
 
 }  // namespace flow
-}  // namespace log
+}  // namespace logs

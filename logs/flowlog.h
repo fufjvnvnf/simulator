@@ -1,9 +1,12 @@
+#ifndef FLOWLOG_H
+#define FLOWLOG_H
+
 #include <stdint.h>
 #include <stdlib.h>
 
 #include <unordered_set>
 
-namespace log {
+namespace logs {
 namespace flow {
 
 class FlowLog {
@@ -14,14 +17,16 @@ class FlowLog {
   ~FlowLog();
 
   void start(double start_time, uint32_t init_seq_no);
-  void finish(double end_time);  // will write to file
-  void send_pkt(uint32_t pkt_size, uint32_t seq_no);
+  void end(bool finished, uint32_t active_flows, double end_time, uint32_t cwnd,
+           double rtt);
+  void send_pkt(uint32_t pkt_size, uint32_t seq_no, uint32_t cwnd);
   void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
   void send_ack(uint32_t pkt_size);
-  void recv_ack(uint32_t pkt_size);
+  void recv_ack(uint32_t pkt_size, double pkt_sent_time);
   void cwnd_cut(bool is_timeout);
   void timeout();
   void ecn();
+  void dup_ack();
 
   void write_to_file();
 
@@ -67,7 +72,20 @@ class FlowLog {
 
   uint32_t ecn_pkts;
   uint32_t dup_acks;
+
+  /* performance */
+  bool finished;
+  uint32_t total_cwnd;
+  uint32_t max_cwnd;
+  uint32_t end_cwnd;
+
+  double total_rtt;
+  double max_rtt;
+  double end_rtt;
+
+  uint32_t active_flows;
 };
 
 }  // namespace flow
-}  // namespace log
+}  // namespace logs
+#endif

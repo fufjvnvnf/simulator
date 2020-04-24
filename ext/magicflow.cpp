@@ -46,7 +46,7 @@ Packet *MagicFlow::send(uint32_t seq) {
                          mss + hdr_size, src, dst);
   total_pkt_sent++;
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
-  log->send_pkt(mss, seq);
+  log->send_pkt(mss, seq, cwnd_mss);
   return p;
 }
 
@@ -92,7 +92,8 @@ void MagicFlow::receive(Packet *p) {
     //((QuickSchedulingHost*)(this->src))->flow_sending = NULL;
     //((QuickSchedulingHost*)(this->src))->schedule();
     add_to_event_queue(new FlowFinishedEvent(get_current_time(), this));
-    log->recv_ack(p->size);
+    rtt = p->sending_time - ((Ack *)p)->pkt_sent_time;
+    log->recv_ack(p->size, rtt);
   }
   delete p;
 }

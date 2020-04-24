@@ -97,6 +97,9 @@
     "codecvt": "cpp",
     "ios": "cpp",
     "locale": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "filesystem": "cpp",
+    "core": "cpp",
+    "*.inc": "cpp"
   }
 }

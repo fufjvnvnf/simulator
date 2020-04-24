@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 
-#include "../log/flowlog.h"
+#include "../logs/flowlog.h"
 #include "node.h"
 
 class Packet;
@@ -21,7 +21,8 @@ class Flow {
   virtual void start_flow();
   virtual void send_pending_data();
   virtual Packet *send(uint32_t seq);
-  virtual void send_ack(uint32_t seq, std::vector<uint32_t> sack_list);
+  virtual void send_ack(uint32_t seq, std::vector<uint32_t> sack_list,
+                        double pkt_sent_time);
   virtual void receive_ack(uint32_t ack, std::vector<uint32_t> sack_list);
   void receive_data_pkt(Packet *p);
   virtual void receive(Packet *p);
@@ -46,6 +47,7 @@ class Flow {
   double retx_timeout;
   uint32_t mss;
   uint32_t hdr_size;
+  double rtt;  // rtt of most recently acked packet
 
   // Sender variables
   uint32_t next_seq_no;
@@ -81,7 +83,7 @@ class Flow {
   uint32_t flow_priority;
   double deadline;
 
-  log::flow::FlowLog *log;
+  logs::flow::FlowLog *log;
 };
 
 #endif

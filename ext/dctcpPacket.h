@@ -21,10 +21,10 @@ class DctcpAck : public Ack {
   // uint32_t delayed_num;
 
   DctcpAck(Flow *flow, uint32_t seq_no_acked, std::vector<uint32_t> sack_list,
-           uint32_t size, Host *src, Host *dst, bool ecn
+           uint32_t size, Host *src, Host *dst, bool ecn, double pkt_sent_time
            //    uint32_t delayed_num
            )
-      : Ack(flow, seq_no_acked, sack_list, size, src, dst) {
+      : Ack(flow, seq_no_acked, sack_list, size, src, dst, pkt_sent_time) {
     this->ecn = ecn;
     //    this->delayed_num = delayed_num;
   }

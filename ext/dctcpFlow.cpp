@@ -165,7 +165,8 @@ void DctcpFlow::receive_data_pkt(Packet *p) {
   }
 
   Packet *a = new DctcpAck(this, recv_till, sack_list, hdr_size, dst, src,
-                           ((DctcpPacket *)p)->ecn);  // Acks are dst->src
+                           ((DctcpPacket *)p)->ecn,
+                           p->sending_time);  // Acks are dst->src
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), a, dst->queue));
   log->send_ack(a->size);
 }
@@ -183,7 +184,8 @@ void DctcpFlow::increase_cwnd() {
 
 void DctcpFlow::receive_ack(Ack *a) {
   DctcpAck *dca = (DctcpAck *)a;
-  log->recv_ack(dca->size);
+  rtt = dca->sending_time - dca->pkt_sent_time;
+  log->recv_ack(dca->size, rtt);
   uint32_t ack = a->seq_no;
   std::vector<uint32_t> sack_list = a->sack_list;
 
@@ -249,6 +251,8 @@ void DctcpFlow::receive_ack(Ack *a) {
         set_timeout(timeout);
       }
     }
+  } else {
+    log->dup_ack();
   }
 
   if (ack == size && !finished) {

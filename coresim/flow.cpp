@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "../log/flowlog.h"
+#include "../logs/flowlog.h"
 #include "../run/params.h"
 #include "event.h"
 #include "packet.h"
@@ -57,7 +57,7 @@ Flow::Flow(uint32_t id, double start_time, uint32_t size, Host *s, Host *d) {
   this->last_hop_departure = 0;
 
   this->log =
-      new log::flow::FlowLog(id, size, params.mss, s->id, -1, d->id, -1);
+      new logs::flow::FlowLog(id, size, params.mss, s->id, -1, d->id, -1);
   this->log->start(start_time, 0);
 }
 
@@ -109,14 +109,15 @@ Packet *Flow::send(uint32_t seq) {
 
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
 
-  log->send_pkt(pkt_size, seq);
+  log->send_pkt(pkt_size, seq, cwnd_mss);
 
   return p;
 }
 
-void Flow::send_ack(uint32_t seq, std::vector<uint32_t> sack_list) {
-  Packet *p =
-      new Ack(this, seq, sack_list, hdr_size, dst, src);  // Acks are dst->src
+void Flow::send_ack(uint32_t seq, std::vector<uint32_t> sack_list,
+                    double pkt_sent_time) {
+  Packet *p = new Ack(this, seq, sack_list, hdr_size, dst, src,
+                      pkt_sent_time);  // Acks are dst->src
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, dst->queue));
   log->send_ack(p->size);
 }
@@ -150,6 +151,8 @@ void Flow::receive_ack(uint32_t ack, std::vector<uint32_t> sack_list) {
         set_timeout(timeout);
       }
     }
+  } else {
+    log->dup_ack();
   }
 
   if (ack == size && !finished) {
@@ -171,7 +174,8 @@ void Flow::receive(Packet *p) {
   if (p->type == ACK_PACKET) {
     Ack *a = (Ack *)p;
     receive_ack(a->seq_no, a->sack_list);
-    log->recv_ack(p->size);
+    rtt = p->sending_time - a->pkt_sent_time;
+    log->recv_ack(p->size, rtt);
   } else if (p->type == NORMAL_PACKET) {
     if (this->first_byte_receive_time == -1) {
       this->first_byte_receive_time = get_current_time();
@@ -224,7 +228,7 @@ void Flow::receive_data_pkt(Packet *p) {
     s += mss;
   }
 
-  send_ack(recv_till, sack_list);  // Cumulative Ack
+  send_ack(recv_till, sack_list, p->sending_time);  // Cumulative Ack
 }
 
 void Flow::set_timeout(double time) {

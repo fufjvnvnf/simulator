@@ -33,6 +33,7 @@ extern uint32_t arrival_packets_at_50;
 extern uint32_t arrival_packets_at_100;
 extern uint32_t arrival_packets_count;
 extern uint32_t total_finished_flows;
+extern uint32_t active_flows;
 
 extern uint32_t backlog3;
 extern uint32_t backlog4;
@@ -128,6 +129,7 @@ void FlowArrivalEvent::process_event() {
     max_outstanding_packets = num_outstanding_packets;
   }
   this->flow->start_flow();
+  active_flows++;
   flow_arrival_count++;
   if (flow_arrivals.size() > 0) {
     add_to_event_queue(flow_arrivals.front());
@@ -292,6 +294,8 @@ FlowFinishedEvent::~FlowFinishedEvent() {}
 void FlowFinishedEvent::process_event() {
   this->flow->finished = true;
   this->flow->finish_time = get_current_time();
+  this->flow->log->end(true, active_flows, this->flow->finish_time,
+                       this->flow->cwnd_mss, this->flow->rtt);
   this->flow->flow_completion_time =
       this->flow->finish_time - this->flow->start_time;
   total_finished_flows++;
