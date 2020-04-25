@@ -109,7 +109,7 @@ Packet *Flow::send(uint32_t seq) {
 
   add_to_event_queue(new PacketQueuingEvent(get_current_time(), p, src->queue));
 
-  log->send_pkt(pkt_size, seq, cwnd_mss);
+  log->send_pkt(pkt_size, seq, get_current_time(), cwnd_mss);
 
   return p;
 }
@@ -174,8 +174,7 @@ void Flow::receive(Packet *p) {
   if (p->type == ACK_PACKET) {
     Ack *a = (Ack *)p;
     receive_ack(a->seq_no, a->sack_list);
-    rtt = p->sending_time - a->pkt_sent_time;
-    log->recv_ack(p->size, rtt);
+    log->recv_ack(p->size, a->seq_no, get_current_time());
   } else if (p->type == NORMAL_PACKET) {
     if (this->first_byte_receive_time == -1) {
       this->first_byte_receive_time = get_current_time();

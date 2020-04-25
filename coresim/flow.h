@@ -47,7 +47,6 @@ class Flow {
   double retx_timeout;
   uint32_t mss;
   uint32_t hdr_size;
-  double rtt;  // rtt of most recently acked packet
 
   // Sender variables
   uint32_t next_seq_no;

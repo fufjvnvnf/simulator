@@ -86,7 +86,6 @@ int EmpiricalRandomVariable::lookup(double u) {
 }
 
 int EmpiricalRandomVariable::loadCDF(std::string filename) {
-  assert(false);
   std::string line;
   std::ifstream myfile(filename);
   assert(myfile.good());

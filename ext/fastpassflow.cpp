@@ -76,7 +76,7 @@ void FastpassFlow::send_data_pkt() {
   if (this->sender_remaining_num_pkts == 0)
     add_to_event_queue(new FastpassTimeoutEvent(
         get_current_time() + params.fastpass_epoch_time, this));
-  log->send_pkt(mss, p->seq_no, cwnd_mss);
+  log->send_pkt(mss, p->seq_no, get_current_time(), cwnd_mss);
 }
 
 void FastpassFlow::fastpass_timeout() {
@@ -115,7 +115,7 @@ void FastpassFlow::receive(Packet* p) {
     }
 
   } else if (p->type == ACK_PACKET) {
-    log->recv_ack(p->size, p->sending_time - ((Ack*)p)->pkt_sent_time);
+    log->recv_ack(p->size, p->seq_no, get_current_time());
     if (debug_flow(this->id))
       std::cout << get_current_time() << " flow " << this->id
                 << " received ack seq" << p->seq_no << "\n";

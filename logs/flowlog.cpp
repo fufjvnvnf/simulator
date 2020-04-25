@@ -39,26 +39,26 @@ void FlowLog::start(double start_time, uint32_t init_seq_no) {
 }
 
 void FlowLog::end(bool finished, uint32_t active_flows, double end_time,
-                  uint32_t cwnd, double rtt) {
+                  uint32_t cwnd) {
   this->finished = finished;
   this->end_time = end_time;
   this->end_cwnd = cwnd;
-  this->end_rtt = rtt;
   this->active_flows = active_flows;
   write_to_file();
 }
 
-void FlowLog::send_pkt(uint32_t pkt_size, uint32_t seq_no, uint32_t cwnd) {
+void FlowLog::send_pkt(uint32_t pkt_size, uint32_t seq_no, double time,
+                       uint32_t cwnd) {
   pkts_sent++;
   bytes_sent += pkt_size;
   last_seq_sent = std::max(last_seq_sent, seq_no);
   total_cwnd += cwnd;
   max_cwnd = std::max(max_cwnd, cwnd);
-  if (sent_pkts.count(seq_no)) {
+  if (sent_pkts.find(seq_no) != sent_pkts.end()) {
     pkts_rexmit++;
     bytes_rexmit += pkt_size;
   } else {
-    sent_pkts.insert(seq_no);
+    sent_pkts.insert({seq_no, time});
   }
 }
 
@@ -73,11 +73,16 @@ void FlowLog::send_ack(uint32_t pkt_size) {
   this->ack_pkts_sent++;
 }
 
-void FlowLog::recv_ack(uint32_t pkt_size, double rtt) {
+void FlowLog::recv_ack(uint32_t pkt_size, uint32_t seq_no, double time) {
   this->ack_bytes_recv += pkt_size;
   this->ack_pkts_recv++;
-  this->total_rtt += rtt;
-  this->max_rtt = std::max(this->max_rtt, rtt);
+  if (acked_pkts.find(seq_no) != acked_pkts.end()) {
+    double rtt = sent_pkts.find(seq_no)->second - time;
+    total_rtt += rtt;
+    max_rtt = std::max(max_rtt, rtt);
+    end_rtt = rtt;
+    acked_pkts.insert(seq_no);
+  }
 }
 
 void FlowLog::cwnd_cut(bool is_timeout) {
@@ -94,8 +99,26 @@ void FlowLog::ecn() { this->ecn_pkts++; }
 void FlowLog::dup_ack() { this->dup_acks++; }
 
 void FlowLog::write_to_file() {
-  // TODO
-  flow_log_file << "test\n";
+  /* identification */
+  flow_log_file << id << '/' << src + ':' + src_port << '/'
+                << dst + ':' + dst_port << ' ';
+  /* flow specifics */
+  flow_log_file << start_time << '/' << end_time << '/' << size_in_byte << '/'
+                << size_in_pkt << '/' << pkt_size << ' ';
+  /* transport layer */
+  flow_log_file << init_seq_no << '/' << last_seq_sent << '/' << last_seq_recv
+                << " data:" << bytes_sent << '/' << bytes_recv << '/'
+                << pkts_sent << '/' << pkts_recv << " ack:" << ack_bytes_sent
+                << '/' << ack_bytes_recv << '/' << ack_pkts_sent << '/'
+                << ack_pkts_recv << ' ' << cgstn_cwnd_cuts << '/'
+                << total_cwnd_cuts << '/' << timeouts << '/' << pkts_rexmit
+                << '/' << bytes_rexmit << '/' << ecn_pkts << '/' << dup_acks
+                << ' ';
+  /* performance */
+  flow_log_file << total_cwnd / (double)pkts_sent << '/' << max_cwnd << '/'
+                << end_cwnd << ' ' << total_rtt / (double)acked_pkts.size()
+                << '/' << max_rtt << '/' << end_rtt << ' ';
+  flow_log_file << active_flows << ' ' << finished << std::endl;
 }
 
 }  // namespace flow

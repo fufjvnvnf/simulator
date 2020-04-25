@@ -115,7 +115,7 @@ void run_scenario() {
 extern void run_experiment(int argc, char** argv, uint32_t exp_type);
 
 int main(int argc, char** argv) {
-  flow_log_file.open("../experiments/test/flowlog.txt");
+  flow_log_file.open("flowlog.txt");
   time_t start_time;
   time(&start_time);
 

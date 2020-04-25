@@ -184,8 +184,7 @@ void DctcpFlow::increase_cwnd() {
 
 void DctcpFlow::receive_ack(Ack *a) {
   DctcpAck *dca = (DctcpAck *)a;
-  rtt = dca->sending_time - dca->pkt_sent_time;
-  log->recv_ack(dca->size, rtt);
+  log->recv_ack(dca->size, dca->seq_no, get_current_time());
   uint32_t ack = a->seq_no;
   std::vector<uint32_t> sack_list = a->sack_list;
 

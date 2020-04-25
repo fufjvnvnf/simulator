@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <unordered_map>
 #include <unordered_set>
 
 namespace logs {
@@ -17,16 +18,17 @@ class FlowLog {
   ~FlowLog();
 
   void start(double start_time, uint32_t init_seq_no);
-  void end(bool finished, uint32_t active_flows, double end_time, uint32_t cwnd,
-           double rtt);
-  void send_pkt(uint32_t pkt_size, uint32_t seq_no, uint32_t cwnd);
+  void end(bool finished, uint32_t active_flows, double end_time,
+           uint32_t cwnd);
+  void send_pkt(uint32_t pkt_size, uint32_t seq_no, double time, uint32_t cwnd);
   void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
   void send_ack(uint32_t pkt_size);
-  void recv_ack(uint32_t pkt_size, double pkt_sent_time);
+  void recv_ack(uint32_t pkt_size, uint32_t seq_no, double time);
   void cwnd_cut(bool is_timeout);
   void timeout();
   void ecn();
   void dup_ack();
+  void rtt(double rtt);
 
   void write_to_file();
 
@@ -55,7 +57,8 @@ class FlowLog {
   uint32_t bytes_recv;
   uint32_t pkts_sent;
   uint32_t pkts_recv;
-  std::unordered_set<uint32_t> sent_pkts;
+  std::unordered_map<uint32_t, double> sent_pkts;  // seq_no -> sent time
+  std::unordered_set<uint32_t> acked_pkts;
 
   // ack packets & bytes
   uint32_t ack_bytes_sent;
@@ -75,11 +78,11 @@ class FlowLog {
 
   /* performance */
   bool finished;
-  uint32_t total_cwnd;
+  uint32_t total_cwnd;  // avg_cwnd = total_cwnd / pkts_sent
   uint32_t max_cwnd;
   uint32_t end_cwnd;
 
-  double total_rtt;
+  double total_rtt;  // avg_rtt = total_rtt / acked_pkt.size
   double max_rtt;
   double end_rtt;
 
