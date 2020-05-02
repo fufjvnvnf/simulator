@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "../logs/eventlog.h"
 #include "flow.h"
 #include "node.h"
 // TODO: Change to Enum
@@ -42,6 +43,8 @@ class Packet {
   double last_enque_time;
 
   int capa_data_seq;
+
+  logs::event::PacketLog *log;
 };
 
 class PlainAck : public Packet {

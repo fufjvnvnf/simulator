@@ -34,14 +34,9 @@ class FlowLog {
 
   void write_to_file();
 
- private:
-  /* flow identification */
-  uint32_t id;
-  uint32_t src;
-  uint32_t dst;
-  uint32_t src_port;
-  uint32_t dst_port;
+  std::shared_ptr<FlowId> flow_id;
 
+ private:
   /* flow specifics */
   double start_time;
   double end_time;
@@ -93,6 +88,19 @@ class FlowLog {
   double slowdown;
 
   std::ofstream* flow_log_file;
+};
+
+class FlowId {
+ public:
+  FlowId(uint32_t id, uint32_t src, uint32_t dst, uint32_t src_port,
+         uint32_t dst_port);
+  ~FlowId();
+
+  uint32_t id;
+  uint32_t src;
+  uint32_t dst;
+  uint32_t src_port;
+  uint32_t dst_port;
 };
 
 }  // namespace flow

@@ -6,13 +6,7 @@ namespace flow {
 FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
                  uint32_t src_port, uint32_t dst_id, uint32_t dst_port,
                  std::ofstream* flow_log_file) {
-  this->id = id;
-  this->pkt_size = pkt_size;
-  this->src = src_id;
-  this->src_port = src_port;
-  this->dst = dst_id;
-  this->dst_port = dst_port;
-
+  flow_id = std::make_shared<FlowId>(id, src_id, dst_id, src_port, dst_port);
   size_in_byte = size;
   size_in_pkt = size / pkt_size;
 
@@ -29,6 +23,15 @@ FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
   ack_bytes_recv = 0;
   ack_pkts_recv = 0;
   this->flow_log_file = flow_log_file;
+}
+
+FlowId::FlowId(uint32_t id, uint32_t src, uint32_t dst, uint32_t src_port,
+               uint32_t dst_port) {
+  this->id = id;
+  this->src = src;
+  this->dst = dst;
+  this->src_port = src_port;
+  this->dst_port = dst_port;
 }
 
 void FlowLog::start(double start_time, uint32_t init_seq_no) {
@@ -99,8 +102,8 @@ void FlowLog::dup_ack() { this->dup_acks++; }
 
 void FlowLog::write_to_file() {
   /* identification */
-  *flow_log_file << id << '/' << src + ':' + src_port << '/'
-                 << dst + ':' + dst_port << ' ';
+  *flow_log_file << flow_id->id << '/' << flow_id->src + ':' + flow_id->src_port
+                 << '/' << flow_id->dst + ':' + flow_id->dst_port << ' ';
   /* flow specifics */
   double fct = end_time - start_time;
   float avg_thruput = size_in_byte / fct;
