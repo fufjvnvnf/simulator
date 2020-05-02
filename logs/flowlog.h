@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <fstream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -14,12 +15,13 @@ class FlowLog {
  public:
   // size and pkt_size are in byte
   FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
-          uint32_t src_port, uint32_t dst_id, uint32_t dst_port);
+          uint32_t src_port, uint32_t dst_id, uint32_t dst_port,
+          std::ofstream* flow_log_file);
   ~FlowLog();
 
   void start(double start_time, uint32_t init_seq_no);
-  void end(bool finished, uint32_t active_flows, double end_time,
-           uint32_t cwnd);
+  void end(bool finished, uint32_t active_flows, double end_time, uint32_t cwnd,
+           double slowdown);
   void send_pkt(uint32_t pkt_size, uint32_t seq_no, double time, uint32_t cwnd);
   void recv_pkt(uint32_t pkt_size, uint32_t seq_no);
   void send_ack(uint32_t pkt_size);
@@ -33,7 +35,7 @@ class FlowLog {
   void write_to_file();
 
  private:
-  /* flow identification*/
+  /* flow identification */
   uint32_t id;
   uint32_t src;
   uint32_t dst;
@@ -87,6 +89,10 @@ class FlowLog {
   double end_rtt;
 
   uint32_t active_flows;
+
+  double slowdown;
+
+  std::ofstream* flow_log_file;
 };
 
 }  // namespace flow

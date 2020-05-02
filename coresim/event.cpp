@@ -294,13 +294,13 @@ FlowFinishedEvent::~FlowFinishedEvent() {}
 void FlowFinishedEvent::process_event() {
   this->flow->finished = true;
   this->flow->finish_time = get_current_time();
-  this->flow->log->end(true, active_flows, this->flow->finish_time,
-                       this->flow->cwnd_mss);
   this->flow->flow_completion_time =
       this->flow->finish_time - this->flow->start_time;
   total_finished_flows++;
   auto slowdown =
       1000000 * flow->flow_completion_time / topology->get_oracle_fct(flow);
+  this->flow->log->end(true, active_flows, this->flow->finish_time,
+                       this->flow->cwnd_mss, slowdown);
   if (slowdown < 1.0 && slowdown > 0.9999) {
     slowdown = 1.0;
   }

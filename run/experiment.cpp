@@ -253,7 +253,8 @@ void run_experiment(int argc, char **argv, uint32_t exp_type) {
     Flow *f = flows_to_schedule[i];
     validate_flow(f);
     if (!f->finished) {
-      f->log->end(false, active_flows, get_current_time(), f->cwnd_mss);
+      f->log->end(false, active_flows, get_current_time(), f->cwnd_mss,
+                  topology->get_oracle_fct(f));
       std::cout << "unfinished flow "
                 << "size:" << f->size << " id:" << f->id
                 << " next_seq:" << f->next_seq_no

@@ -1,14 +1,11 @@
 #include "flowlog.h"
 
-#include <fstream>
-
-extern std::ofstream flow_log_file;
-
 namespace logs {
 namespace flow {
 
 FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
-                 uint32_t src_port, uint32_t dst_id, uint32_t dst_port) {
+                 uint32_t src_port, uint32_t dst_id, uint32_t dst_port,
+                 std::ofstream* flow_log_file) {
   this->id = id;
   this->pkt_size = pkt_size;
   this->src = src_id;
@@ -31,6 +28,7 @@ FlowLog::FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
   ack_pkts_sent = 0;
   ack_bytes_recv = 0;
   ack_pkts_recv = 0;
+  this->flow_log_file = flow_log_file;
 }
 
 void FlowLog::start(double start_time, uint32_t init_seq_no) {
@@ -39,11 +37,12 @@ void FlowLog::start(double start_time, uint32_t init_seq_no) {
 }
 
 void FlowLog::end(bool finished, uint32_t active_flows, double end_time,
-                  uint32_t cwnd) {
+                  uint32_t cwnd, double slowdown) {
   this->finished = finished;
   this->end_time = end_time;
   this->end_cwnd = cwnd;
   this->active_flows = active_flows;
+  this->slowdown = slowdown;
   write_to_file();
 }
 
@@ -100,25 +99,28 @@ void FlowLog::dup_ack() { this->dup_acks++; }
 
 void FlowLog::write_to_file() {
   /* identification */
-  flow_log_file << id << '/' << src + ':' + src_port << '/'
-                << dst + ':' + dst_port << ' ';
+  *flow_log_file << id << '/' << src + ':' + src_port << '/'
+                 << dst + ':' + dst_port << ' ';
   /* flow specifics */
-  flow_log_file << start_time << '/' << end_time << '/' << size_in_byte << '/'
-                << size_in_pkt << '/' << pkt_size << ' ';
+  double fct = end_time - start_time;
+  float avg_thruput = size_in_byte / fct;
+  *flow_log_file << start_time << '/' << end_time << '/' << fct << '/'
+                 << slowdown << '/' << size_in_byte << '/' << size_in_pkt << '/'
+                 << pkt_size << '/' << avg_thruput << ' ';
   /* transport layer */
-  flow_log_file << init_seq_no << '/' << last_seq_sent << '/' << last_seq_recv
-                << " data:" << bytes_sent << '/' << bytes_recv << '/'
-                << pkts_sent << '/' << pkts_recv << " ack:" << ack_bytes_sent
-                << '/' << ack_bytes_recv << '/' << ack_pkts_sent << '/'
-                << ack_pkts_recv << ' ' << cgstn_cwnd_cuts << '/'
-                << total_cwnd_cuts << '/' << timeouts << '/' << pkts_rexmit
-                << '/' << bytes_rexmit << '/' << ecn_pkts << '/' << dup_acks
-                << ' ';
+  *flow_log_file << init_seq_no << '/' << last_seq_sent << '/' << last_seq_recv
+                 << " data:" << bytes_sent << '/' << bytes_recv << '/'
+                 << pkts_sent << '/' << pkts_recv << " ack:" << ack_bytes_sent
+                 << '/' << ack_bytes_recv << '/' << ack_pkts_sent << '/'
+                 << ack_pkts_recv << ' ' << cgstn_cwnd_cuts << '/'
+                 << total_cwnd_cuts << '/' << timeouts << '/' << pkts_rexmit
+                 << '/' << bytes_rexmit << '/' << ecn_pkts << '/' << dup_acks
+                 << ' ';
   /* performance */
-  flow_log_file << total_cwnd / (double)pkts_sent << '/' << max_cwnd << '/'
-                << end_cwnd << ' ' << total_rtt / (double)acked_pkts.size()
-                << '/' << max_rtt << '/' << end_rtt << ' ';
-  flow_log_file << active_flows << ' ' << finished << std::endl;
+  *flow_log_file << total_cwnd / (double)pkts_sent << '/' << max_cwnd << '/'
+                 << end_cwnd << ' ' << total_rtt / (double)acked_pkts.size()
+                 << '/' << max_rtt << '/' << end_rtt << ' ';
+  *flow_log_file << active_flows << ' ' << finished << std::endl;
 }
 
 }  // namespace flow
