@@ -3,16 +3,14 @@
 namespace logs {
 namespace event {
 
-EventLog::EventLog(std::ofstream* log_file) { this->log_file = log_file; }
-
 void EventLog::receive(PacketLog* packet, double time, uint32_t send_id,
                        uint32_t node_id) {
-  *log_file << "receive " << time << ' ' << send_id << "->" << node_id << ' ';
-  *log_file << "flow:" << packet->flow_id->id << '/'
-            << packet->flow_id->src + ':' + packet->flow_id->src_port << '/'
-            << packet->flow_id->dst + ':' + packet->flow_id->dst_port << ' ';
-  *log_file << "packet:" << packet->seq_no << '/' << packet->pkt_id << '/'
-            << packet->pkt_size << '/' << packet->hdr_size << ' ';
+  log_file << "receive " << time << ' ' << send_id << "->" << node_id << ' ';
+  log_file << "flow:" << packet->flow_id->id << '/'
+           << packet->flow_id->src + ':' + packet->flow_id->src_port << '/'
+           << packet->flow_id->dst + ':' + packet->flow_id->dst_port << ' ';
+  log_file << "packet:" << packet->seq_no << '/' << packet->pkt_id << '/'
+           << packet->pkt_size << '/' << packet->hdr_size << ' ';
 }
 
 PacketLog::PacketLog(std::shared_ptr<logs::flow::FlowId> flow_id,

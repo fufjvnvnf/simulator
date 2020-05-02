@@ -49,8 +49,6 @@ uint32_t total_completed_packets = 0;
 uint32_t sent_packets = 0;
 
 extern DCExpParams params;
-extern std::ofstream flow_log_file;
-std::ofstream flow_log_file;
 double start_time = -1;
 
 const std::string currentDateTime() {
@@ -114,8 +112,13 @@ void run_scenario() {
 
 extern void run_experiment(int argc, char** argv, uint32_t exp_type);
 
+std::ofstream logs::flow::FlowLog::log_file;
+std::ofstream logs::event::EventLog::log_file;
+
 int main(int argc, char** argv) {
-  flow_log_file.open("flowlog.txt");
+  logs::flow::FlowLog::log_file.open("flowlog.txt");
+  logs::event::EventLog::log_file.open("eventlog.txt");
+
   time_t start_time;
   time(&start_time);
 

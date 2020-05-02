@@ -17,7 +17,6 @@ extern DCExpParams params;
 extern uint32_t num_outstanding_packets;
 extern uint32_t max_outstanding_packets;
 extern uint32_t duplicated_packets_received;
-extern std::ofstream flow_log_file;
 
 Flow::Flow(uint32_t id, double start_time, uint32_t size, Host *s, Host *d) {
   this->id = id;
@@ -57,8 +56,8 @@ Flow::Flow(uint32_t id, double start_time, uint32_t size, Host *s, Host *d) {
   this->first_hop_departure = 0;
   this->last_hop_departure = 0;
 
-  this->log = new logs::flow::FlowLog(id, size, params.mss, s->id, -1, d->id,
-                                      -1, &flow_log_file);
+  this->log =
+      new logs::flow::FlowLog(id, size, params.mss, s->id, -1, d->id, -1);
   this->log->start(start_time, 0);
 }
 

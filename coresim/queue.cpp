@@ -64,6 +64,7 @@ void Queue::enque(Packet *packet) {
   if (bytes_in_queue + packet->size <= limit_bytes) {
     packets.push_back(packet);
     bytes_in_queue += packet->size;
+
   } else {
     pkt_drop++;
     drop(packet);

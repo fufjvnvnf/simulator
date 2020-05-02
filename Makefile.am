@@ -29,6 +29,7 @@ simulator_SOURCES = 				 		 	 \
 					ext/dctcpQueue.cpp			 \
 					ext/dctcpFlow.cpp			 \
 					ext/ideal.cpp				 \
+					logs/eventlog.cpp	 	\
 					logs/flowlog.cpp	 	\
 					run/params.cpp 		 	 	 \
 					run/stats.cpp 			   	 \

@@ -11,13 +11,15 @@
 namespace logs {
 namespace flow {
 
+class FlowId;
+
 class FlowLog {
  public:
   // size and pkt_size are in byte
   FlowLog(uint32_t id, uint32_t size, uint32_t pkt_size, uint32_t src_id,
-          uint32_t src_port, uint32_t dst_id, uint32_t dst_port,
-          std::ofstream* flow_log_file);
-  ~FlowLog();
+          uint32_t src_port, uint32_t dst_id, uint32_t dst_port);
+
+  static void setLogFile(std::ofstream* log_file);
 
   void start(double start_time, uint32_t init_seq_no);
   void end(bool finished, uint32_t active_flows, double end_time, uint32_t cwnd,
@@ -35,6 +37,7 @@ class FlowLog {
   void write_to_file();
 
   std::shared_ptr<FlowId> flow_id;
+  static std::ofstream log_file;
 
  private:
   /* flow specifics */
@@ -86,15 +89,12 @@ class FlowLog {
   uint32_t active_flows;
 
   double slowdown;
-
-  std::ofstream* flow_log_file;
 };
 
 class FlowId {
  public:
   FlowId(uint32_t id, uint32_t src, uint32_t dst, uint32_t src_port,
          uint32_t dst_port);
-  ~FlowId();
 
   uint32_t id;
   uint32_t src;
