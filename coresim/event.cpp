@@ -235,6 +235,8 @@ void QueueProcessingEvent::process_event() {
     queue->busy = true;
     queue->busy_events.clear();
     queue->packet_transmitting = packet;
+    logs::event::EventLog::event("receive", packet->log, get_current_time(),
+                                 queue->src->id, queue->dst->id);
     Queue *next_hop = topology->get_next_hop(packet, queue);
     double td = queue->get_transmission_delay(packet->size);
     double pd = queue->propagation_delay;
@@ -244,6 +246,8 @@ void QueueProcessingEvent::process_event() {
     queue->busy_events.push_back(queue->queue_proc_event);
     if (next_hop == NULL) {
       Event *arrival_evt = new PacketArrivalEvent(time + td + pd, packet);
+      logs::event::EventLog::event("arrive", packet->log, get_current_time(),
+                                   queue->src->id, queue->dst->id);
       add_to_event_queue(arrival_evt);
       queue->busy_events.push_back(arrival_evt);
     } else {

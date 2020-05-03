@@ -14,7 +14,7 @@
         "conf_phost_aditya.txt"
       ],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/py/",
       "environment": [],
       "externalConsole": false,
       "MIMode": "lldb",

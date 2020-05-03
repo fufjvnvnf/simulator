@@ -12,13 +12,11 @@ class PacketLog;
 
 class EventLog {
  public:
-  void receive(PacketLog* packet, double time, uint32_t send_id,
-               uint32_t node_id);
+  static void event(std::string event, PacketLog* packet, double time,
+                    uint32_t send_id, uint32_t node_id);
 
   static std::ofstream log_file;
 };
-
-enum EventType { RECEIVE, ARRIVE, DROP, FORWARD };
 
 class PacketLog {
  public:

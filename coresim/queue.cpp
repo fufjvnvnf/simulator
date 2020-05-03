@@ -64,10 +64,13 @@ void Queue::enque(Packet *packet) {
   if (bytes_in_queue + packet->size <= limit_bytes) {
     packets.push_back(packet);
     bytes_in_queue += packet->size;
-
+    logs::event::EventLog::event("forward", packet->log, get_current_time(),
+                                 src->id, dst->id);
   } else {
     pkt_drop++;
     drop(packet);
+    logs::event::EventLog::event("drop", packet->log, get_current_time(),
+                                 src->id, dst->id);
   }
 }
 

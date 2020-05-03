@@ -21,6 +21,8 @@ void PFabricQueue::enque(Packet *packet) {
   packets.push_back(packet);
   bytes_in_queue += packet->size;
   packet->last_enque_time = get_current_time();
+  logs::event::EventLog::event("forward", packet->log, get_current_time(),
+                               src->id, dst->id);
   if (bytes_in_queue > limit_bytes) {
     uint32_t worst_priority = 0;
     uint32_t worst_index = 0;
@@ -36,6 +38,8 @@ void PFabricQueue::enque(Packet *packet) {
     packets.erase(packets.begin() + worst_index);
     pkt_drop++;
     drop(worst_packet);
+    logs::event::EventLog::event("drop", worst_packet->log, get_current_time(),
+                                 src->id, dst->id);
   }
 }
 
