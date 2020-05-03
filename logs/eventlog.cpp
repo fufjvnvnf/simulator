@@ -3,15 +3,21 @@
 namespace logs {
 namespace event {
 
-void EventLog::event(std::string event, PacketLog* packet, double time,
-                     uint32_t send_id, uint32_t node_id) {
-  log_file << event << ' ' << time << ' ' << send_id << "->" << node_id << ' ';
-  log_file << "flow:" << packet->flow_id->id << '/'
-           << packet->flow_id->src + ':' + packet->flow_id->src_port << '/'
-           << packet->flow_id->dst + ':' + packet->flow_id->dst_port << ' ';
-  log_file << "packet:" << packet->seq_no << '/' << packet->pkt_id << '/'
-           << packet->pkt_size << '/' << packet->hdr_size << ' ';
-  log_file << std::endl;
+void EventLog::packet(std::string event, PacketLog* packet, double time,
+                      uint32_t send_id, uint32_t node_id) {
+  eventlog_file << time << ' ' << event << ' ' << send_id << "->" << node_id
+                << ' ';
+  eventlog_file << "flow:" << *packet->flow_id << ' ';
+  eventlog_file << "packet:" << packet->seq_no << '/' << packet->pkt_id << '/'
+                << packet->pkt_size << '/' << packet->hdr_size << ' ';
+  eventlog_file << std::endl;
+}
+
+void EventLog::var(double time, std::string var, std::string value,
+                   logs::flow::FlowId* flow_id) {
+  varlog_file << time << ' ' << var << value << ' ';
+  varlog_file << "flow:" << flow_id;
+  varlog_file << std::endl;
 }
 
 PacketLog::PacketLog(std::shared_ptr<logs::flow::FlowId> flow_id,

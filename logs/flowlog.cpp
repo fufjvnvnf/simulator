@@ -1,5 +1,7 @@
 #include "flowlog.h"
 
+#include <string>
+
 namespace logs {
 namespace flow {
 
@@ -30,6 +32,12 @@ FlowId::FlowId(uint32_t id, uint32_t src, uint32_t dst, uint32_t src_port,
   this->dst = dst;
   this->src_port = src_port;
   this->dst_port = dst_port;
+}
+
+std::ostream& operator<<(std::ostream& file, const FlowId& flow_id) {
+  file << flow_id.id << '/' << flow_id.src + ':' + flow_id.src_port << '/'
+       << flow_id.dst + ':' + flow_id.dst_port;
+  return file;
 }
 
 void FlowLog::start(double start_time, uint32_t init_seq_no) {
@@ -100,8 +108,7 @@ void FlowLog::dup_ack() { this->dup_acks++; }
 
 void FlowLog::write_to_file() {
   /* identification */
-  log_file << flow_id->id << '/' << flow_id->src + ':' + flow_id->src_port
-           << '/' << flow_id->dst + ':' + flow_id->dst_port << ' ';
+  log_file << *flow_id << ' ';
   /* flow specifics */
   double fct = end_time - start_time;
   float avg_thruput = size_in_byte / fct;

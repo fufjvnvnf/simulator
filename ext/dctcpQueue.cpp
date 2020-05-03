@@ -26,8 +26,8 @@ void DctcpQueue::enque(Packet *packet) {
   b_arrivals += packet->size;
   if (bytes_in_queue + packet->size <= limit_bytes) {
     packets.push_back(packet);
-    logs::event::EventLog::event("forward", packet->log, get_current_time(),
-                                 src->id, dst->id);
+    logs::event::EventLog::packet("forward", packet->log, get_current_time(),
+                                  src->id, dst->id);
     bytes_in_queue += packet->size;
 
     if (packets.size() >= params.dctcp_mark_thresh) {
@@ -36,7 +36,7 @@ void DctcpQueue::enque(Packet *packet) {
   } else {
     pkt_drop++;
     drop(packet);
-    logs::event::EventLog::event("drop", packet->log, get_current_time(),
-                                 src->id, dst->id);
+    logs::event::EventLog::packet("drop", packet->log, get_current_time(),
+                                  src->id, dst->id);
   }
 }

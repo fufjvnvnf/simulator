@@ -113,11 +113,13 @@ void run_scenario() {
 extern void run_experiment(int argc, char** argv, uint32_t exp_type);
 
 std::ofstream logs::flow::FlowLog::log_file;
-std::ofstream logs::event::EventLog::log_file;
+std::ofstream logs::event::EventLog::eventlog_file;
+std::ofstream logs::event::EventLog::varlog_file;
 
 int main(int argc, char** argv) {
   logs::flow::FlowLog::log_file.open("flowlog.txt");
-  logs::event::EventLog::log_file.open("eventlog.txt");
+  logs::event::EventLog::eventlog_file.open("eventlog.txt");
+  logs::event::EventLog::varlog_file.open("varlog.txt");
 
   time_t start_time;
   time(&start_time);

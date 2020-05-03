@@ -91,6 +91,8 @@ class FlowLog {
   double slowdown;
 };
 
+std::ostream& operator<<(std::ostream& out, const FlowId& flow_id);
+
 class FlowId {
  public:
   FlowId(uint32_t id, uint32_t src, uint32_t dst, uint32_t src_port,

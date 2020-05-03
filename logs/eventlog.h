@@ -12,10 +12,13 @@ class PacketLog;
 
 class EventLog {
  public:
-  static void event(std::string event, PacketLog* packet, double time,
-                    uint32_t send_id, uint32_t node_id);
+  static void packet(std::string event, PacketLog* packet, double time,
+                     uint32_t send_id, uint32_t node_id);
+  static void var(double time, std::string var, std::string value,
+                  logs::flow::FlowId* flowid);
 
-  static std::ofstream log_file;
+  static std::ofstream eventlog_file;
+  static std::ofstream varlog_file;
 };
 
 class PacketLog {
